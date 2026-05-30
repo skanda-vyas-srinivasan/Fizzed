@@ -6,9 +6,10 @@ import type { Rating, RatingBreakdown, Soda } from "@/lib/types";
 import wikiSodaNames from "@/lib/wiki-soda-names.json";
 
 const wikiNameSet = new Set<string>((wikiSodaNames as string[]).map((name) => name.toLowerCase()));
+const wikiCatalogCountry = "Global";
 
-function isWikiSoda(soda: Pick<Soda, "name">) {
-  return wikiNameSet.has(soda.name.toLowerCase());
+function isWikiSoda(soda: Pick<Soda, "name" | "country">) {
+  return soda.country === wikiCatalogCountry && wikiNameSet.has(soda.name.toLowerCase());
 }
 
 export const getCurrentUser = cache(async () => {
@@ -35,7 +36,7 @@ export async function getHomeData() {
   const supabase = createClient();
 
   const [sodas, ratings, profiles] = await Promise.all([
-    supabase.from("sodas").select("*").order("total_ratings", { ascending: false }).limit(8),
+    supabase.from("sodas").select("*").eq("country", wikiCatalogCountry).order("total_ratings", { ascending: false }).limit(8),
     supabase
       .from("ratings")
       .select("*, profiles(*), sodas(*)")
@@ -63,7 +64,7 @@ export async function getSodas(filters: { q?: string; brand?: string; country?: 
   }
 
   const supabase = createClient();
-  let query = supabase.from("sodas").select("*").order("name").limit(2000);
+  let query = supabase.from("sodas").select("*").eq("country", wikiCatalogCountry).order("name").limit(2000);
 
   if (filters.q) query = query.or(`name.ilike.%${filters.q}%,brand.ilike.%${filters.q}%`);
   if (filters.brand) query = query.eq("brand", filters.brand);
@@ -84,7 +85,7 @@ export async function getBrowseFacets() {
   }
 
   const supabase = createClient();
-  const { data } = await supabase.from("sodas").select("name,brand,country,category").limit(20000);
+  const { data } = await supabase.from("sodas").select("name,brand,country,category").eq("country", wikiCatalogCountry).limit(20000);
   const rows = ((data || []) as Array<Pick<Soda, "name" | "brand" | "country" | "category">>).filter(isWikiSoda);
 
   return {

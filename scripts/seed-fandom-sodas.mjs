@@ -18,9 +18,12 @@ const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE
 
 const dryRun = process.argv.includes("--dry-run");
 const limitArg = process.argv.find((arg) => arg.startsWith("--limit="));
-const limit = Number(limitArg?.split("=")[1] || 250);
-const wikiApi = "https://soda-loverswiki.fandom.com/api.php";
-const source = "soda_lovers_wiki";
+const limit = Number(limitArg?.split("=")[1] || 5000);
+const wikiApi = "https://the-soda.fandom.com/api.php";
+const wikiBase = "https://the-soda.fandom.com/wiki";
+const categoryTitle = "Category:The_Flavors";
+const catalogCountry = "Global";
+const source = "the_soda_wiki";
 const knownCountries = new Set([
   "Australia",
   "Brazil",
@@ -40,11 +43,15 @@ const nonFlavorCategories = [
   /the flavors/i,
   /^(red|blue|green|yellow|purple|brown|clear|beige|pink|orange|black|white)$/,
   /\b(can|bottle|glass|online|rare|knockoffs?|discontinued|available|soda water)\b/i,
+  /^(current|present|past|international|limited edition|franchise exclusive|test|regional|exclusive|holiday)$/i,
   /^(red|blue|green|yellow|purple|brown|clear|beige|pink|orange|black|white) flavors?$/i,
   /^\d{3,4}s?\??$/,
   /^\d+(\.\d+)?\s?(ml|l|oz)$/i
 ];
 const nonFlavorTags = new Set(["Red", "Blue", "Green", "Yellow", "Purple", "Brown", "Clear", "Beige", "Pink", "Orange", "Black", "White"]);
+const nonFlavorTagPatterns = [
+  /^(current|present|past|international|limited edition|franchise exclusive|test|regional|exclusive|holiday)$/i
+];
 
 function titleCase(value) {
   return value
@@ -106,6 +113,7 @@ function flavorTagsFrom(infobox, categories) {
   return Array.from(tags)
     .filter((tag) => tag && tag !== "The")
     .filter((tag) => !nonFlavorTags.has(tag))
+    .filter((tag) => !nonFlavorTagPatterns.some((pattern) => pattern.test(tag)))
     .filter((tag) => !/^\d+(\.\d+)?\s?(ml|l|oz)$/i.test(tag))
     .slice(0, 6);
 }
@@ -117,7 +125,7 @@ function brandFromTitle(title) {
 }
 
 function countryFrom(infobox, categories) {
-  const country = infobox.country_of_origine || infobox.country_of_origin || infobox.locations_available;
+  const country = infobox.country_of_origine || infobox.country_of_origin || infobox.locations_available || infobox.location_available || infobox.locations;
   if (country) return titleCase(country.replace(/<[^>]+>/g, ""));
 
   const candidate = categories.find((category) => knownCountries.has(category));
@@ -138,7 +146,7 @@ function toRow(page) {
   return {
     name: (infobox.title1 || page.title).slice(0, 160),
     brand: brandFromTitle(page.title).slice(0, 120),
-    country: countryFrom(infobox, categories),
+    country: catalogCountry,
     category: titleCase(type).slice(0, 120),
     flavor_tags: tags.length ? tags : ["Soda"],
     image_url: imageUrl(page)
@@ -153,7 +161,7 @@ function toReviewRow(page) {
   return {
     ...toRow(page),
     source,
-    source_url: `https://soda-loverswiki.fandom.com/wiki/${encodeURIComponent(page.title.replaceAll(" ", "_"))}`,
+    source_url: `${wikiBase}/${encodeURIComponent(page.title.replaceAll(" ", "_"))}`,
     source_page_id: String(page.pageid),
     source_payload: {
       title: page.title,
@@ -171,7 +179,7 @@ async function fetchCategoryMembers() {
     const url = new URL(wikiApi);
     url.searchParams.set("action", "query");
     url.searchParams.set("list", "categorymembers");
-    url.searchParams.set("cmtitle", "Category:The flavors");
+    url.searchParams.set("cmtitle", categoryTitle);
     url.searchParams.set("cmlimit", "500");
     url.searchParams.set("format", "json");
     if (cmcontinue) url.searchParams.set("cmcontinue", cmcontinue);
