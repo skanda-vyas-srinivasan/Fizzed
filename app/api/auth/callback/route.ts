@@ -10,6 +10,14 @@ export async function GET(request: Request) {
   if (code && hasPublicSupabaseEnv()) {
     const supabase = createClient();
     await supabase.auth.exchangeCodeForSession(code);
+    const { data } = await supabase.auth.getUser();
+
+    if (data.user && next === "/") {
+      const { data: profile } = await supabase.from("profiles").select("username").eq("id", data.user.id).single();
+      if (!profile?.username) {
+        return NextResponse.redirect(new URL("/onboarding", requestUrl.origin));
+      }
+    }
   }
 
   return NextResponse.redirect(new URL(next, requestUrl.origin));

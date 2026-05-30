@@ -1,12 +1,11 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --font-playfair: "Playfair Display";
-  --font-dm-sans: "DM Sans";
+  --font-lora: "Lora";
   --bg: #211A1F;
   --panel: #2B2228;
   --panel-soft: #362B32;
@@ -31,7 +30,7 @@ body {
   min-height: 100vh;
   background: var(--bg);
   color: var(--text);
-  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-family: var(--font-lora), Georgia, serif;
   text-rendering: geometricPrecision;
 }
 
@@ -63,7 +62,7 @@ option {
 }
 
 .font-display {
-  font-family: var(--font-playfair), Georgia, serif;
+  font-family: var(--font-lora), Georgia, serif;
 }
 
 .lb-panel {

@@ -23,11 +23,16 @@ export function ReviewCard({ rating, showSoda = true }: { rating: Rating; showSo
                   {soda.name}
                 </Link>
               ) : null}
-              <div className="mt-0.5 text-sm text-[#CBBCC2]">
+              <div className="mt-0.5 flex items-center gap-2 text-sm text-[#CBBCC2]">
                 {profile?.username ? (
-                  <Link href={`/profile/${profile.username}`} className="font-bold text-[#F8F1F3] hover:text-[#D9A6B5]">
-                    @{profile.username}
-                  </Link>
+                  <>
+                    <Link href={`/profile/${profile.username}`} className="flex h-6 w-6 items-center justify-center overflow-hidden rounded-full bg-[#E9ECEF] text-[10px] font-black text-[#4A3B43]">
+                      {profile.avatar_url ? <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" /> : profile.username.slice(0, 2).toUpperCase()}
+                    </Link>
+                    <Link href={`/profile/${profile.username}`} className="font-bold text-[#F8F1F3] hover:text-[#D9A6B5]">
+                      @{profile.username}
+                    </Link>
+                  </>
                 ) : (
                   "Fizzed user"
                 )}{" "}

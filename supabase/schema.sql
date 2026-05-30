@@ -28,7 +28,7 @@ create table if not exists public.ratings (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.profiles(id) on delete cascade,
   soda_id uuid not null references public.sodas(id) on delete cascade,
-  score integer not null check (score between 1 and 5),
+  score integer check (score between 1 and 5),
   review_text text default '',
   created_at timestamptz not null default now()
 );
@@ -56,8 +56,8 @@ as $$
 begin
   update public.sodas
   set
-    avg_rating = coalesce((select round(avg(score)::numeric, 2) from public.ratings where soda_id = target_soda_id), 0),
-    total_ratings = coalesce((select count(*) from public.ratings where soda_id = target_soda_id), 0)
+    avg_rating = coalesce((select round(avg(score)::numeric, 2) from public.ratings where soda_id = target_soda_id and score is not null), 0),
+    total_ratings = coalesce((select count(score) from public.ratings where soda_id = target_soda_id), 0)
   where id = target_soda_id;
 end;
 $$;
@@ -105,7 +105,7 @@ begin
   values (
     new.id,
     nullif(new.raw_user_meta_data->>'username', ''),
-    new.raw_user_meta_data->>'avatar_url'
+    coalesce(new.raw_user_meta_data->>'avatar_url', new.raw_user_meta_data->>'picture')
   )
   on conflict (id) do nothing;
 
@@ -124,6 +124,7 @@ alter table public.ratings enable row level security;
 alter table public.follows enable row level security;
 
 create policy "Profiles are public" on public.profiles for select using (true);
+create policy "Users create own profile" on public.profiles for insert with check (auth.uid() = id);
 create policy "Users update own profile" on public.profiles for update using (auth.uid() = id) with check (auth.uid() = id);
 create policy "Sodas are public" on public.sodas for select using (true);
 create policy "Ratings are public" on public.ratings for select using (true);

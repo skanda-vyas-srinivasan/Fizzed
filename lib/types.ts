@@ -18,11 +18,17 @@ export type Profile = {
   avatar_url: string | null;
 };
 
+export type FollowState = {
+  followers: number;
+  following: number;
+  isFollowing: boolean;
+};
+
 export type Rating = {
   id: string;
   user_id: string;
   soda_id: string;
-  score: number;
+  score: number | null;
   review_text: string | null;
   created_at: string;
   profiles?: Profile | null;
@@ -30,6 +36,34 @@ export type Rating = {
 };
 
 export type RatingBreakdown = {
-  score: number;
+  score: number | null;
   count: number;
+};
+
+export type DiscussionReply = {
+  id: string;
+  post_id: string;
+  user_id: string;
+  body: string;
+  created_at: string;
+  profiles?: Profile | null;
+};
+
+export type DiscussionPost = {
+  id: string;
+  user_id: string;
+  title: string;
+  body: string;
+  created_at: string;
+  profiles?: Profile | null;
+  replies?: DiscussionReply[];
+};
+
+export type SodaList = {
+  id: string;
+  user_id: string;
+  title: string;
+  description: string | null;
+  created_at: string;
+  profiles?: Profile | null;
 };

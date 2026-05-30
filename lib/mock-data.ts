@@ -1,4 +1,4 @@
-import type { Profile, Rating, Soda } from "@/lib/types";
+import type { DiscussionPost, Profile, Rating, Soda, SodaList } from "@/lib/types";
 
 export const mockSodas: Soda[] = [
   {
@@ -75,5 +75,37 @@ export const mockRatings: Rating[] = [
     created_at: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
     profiles: mockProfile,
     sodas: mockSodas[1]
+  }
+];
+
+export const mockDiscussionPosts: DiscussionPost[] = [
+  {
+    id: "demo-discussion-1",
+    user_id: mockProfile.id,
+    title: "Best orange soda that is not Fanta?",
+    body: "Jarritos Mandarin is my pick right now, but I want something sharper and less syrupy.",
+    created_at: new Date(Date.now() - 1000 * 60 * 40).toISOString(),
+    profiles: mockProfile,
+    replies: [
+      {
+        id: "demo-reply-1",
+        post_id: "demo-discussion-1",
+        user_id: mockProfile.id,
+        body: "Orangina is a good direction if you want a lighter citrus thing.",
+        created_at: new Date(Date.now() - 1000 * 60 * 20).toISOString(),
+        profiles: mockProfile
+      }
+    ]
+  }
+];
+
+export const mockSodaLists: SodaList[] = [
+  {
+    id: "demo-list-1",
+    user_id: mockProfile.id,
+    title: "Best orange sodas",
+    description: "Mandarin, orange cream, and anything that tastes better cold.",
+    created_at: new Date(Date.now() - 1000 * 60 * 90).toISOString(),
+    profiles: mockProfile
   }
 ];
