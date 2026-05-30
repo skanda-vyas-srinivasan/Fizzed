@@ -1,13 +1,11 @@
 import Link from "next/link";
 import { SodaCard } from "@/components/SodaCard";
 import { getBrowseFacets, getSodas } from "@/lib/data";
-import { groupSodas } from "@/lib/normalize";
 import { ensureSodasSeeded } from "@/lib/seed";
 
 export default async function Browse({ searchParams }: { searchParams: { q?: string; brand?: string; country?: string; category?: string } }) {
   await ensureSodasSeeded();
   const [sodas, facets] = await Promise.all([getSodas(searchParams), getBrowseFacets()]);
-  const groupedSodas = groupSodas(sodas);
 
   return (
     <div className="space-y-6">
@@ -27,15 +25,14 @@ export default async function Browse({ searchParams }: { searchParams: { q?: str
         </form>
       </div>
 
-      <div className="grid gap-3 rounded-[1.6rem] bg-white p-4 ring-1 ring-black/5 md:grid-cols-3">
+      <div className="grid gap-3 rounded-[1.6rem] bg-white p-4 ring-1 ring-black/5 md:grid-cols-2">
         <Facet name="category" value={searchParams.category} items={facets.categories} label="Category" />
-        <Facet name="country" value={searchParams.country} items={facets.countries} label="Country" />
         <Facet name="brand" value={searchParams.brand} items={facets.brands} label="Brand" />
       </div>
 
       <div className="flex items-center justify-between">
         <p className="text-sm font-semibold text-neutral-500">
-          {groupedSodas.length} results · {sodas.length} raw entries
+          {sodas.length} results
         </p>
         <Link href="/browse" className="text-sm font-bold text-fizz">
           Clear filters
@@ -43,7 +40,7 @@ export default async function Browse({ searchParams }: { searchParams: { q?: str
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {groupedSodas.map((soda) => (
+        {sodas.map((soda) => (
           <SodaCard key={soda.id} soda={soda} />
         ))}
       </div>
