@@ -89,9 +89,9 @@ export async function getBrowseFacets() {
   const rows = ((data || []) as Array<Pick<Soda, "name" | "brand" | "country" | "category">>).filter(isWikiSoda);
 
   return {
-    brands: Array.from(new Set(rows.map((row) => row.brand).filter(Boolean))).sort().slice(0, 40),
+    brands: Array.from(new Set(rows.map((row) => row.brand).filter((brand) => brand && brand !== "Unknown"))).sort().slice(0, 40),
     countries: Array.from(new Set(rows.map((row) => row.country).filter(Boolean))).sort().slice(0, 40),
-    categories: Array.from(new Set(rows.map((row) => row.category).filter(Boolean))).sort().slice(0, 40)
+    categories: Array.from(new Set(rows.map((row) => row.category).filter((category) => category && category !== "Unknown"))).sort().slice(0, 40)
   };
 }
 

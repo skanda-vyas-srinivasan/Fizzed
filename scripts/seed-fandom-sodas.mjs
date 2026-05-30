@@ -43,14 +43,14 @@ const nonFlavorCategories = [
   /the flavors/i,
   /^(red|blue|green|yellow|purple|brown|clear|beige|pink|orange|black|white)$/,
   /\b(can|bottle|glass|online|rare|knockoffs?|discontinued|available|soda water)\b/i,
-  /^(current|present|past|international|limited edition|franchise exclusive|test|regional|exclusive|holiday)$/i,
+  /^(current|present|past|international|limited edition|franchise exclusive|test|regional|exclusive|holiday|cancelled|seasonal)$/i,
   /^(red|blue|green|yellow|purple|brown|clear|beige|pink|orange|black|white) flavors?$/i,
   /^\d{3,4}s?\??$/,
   /^\d+(\.\d+)?\s?(ml|l|oz)$/i
 ];
-const nonFlavorTags = new Set(["Red", "Blue", "Green", "Yellow", "Purple", "Brown", "Clear", "Beige", "Pink", "Orange", "Black", "White"]);
+const nonFlavorTags = new Set(["Red", "Blue", "Green", "Yellow", "Purple", "Brown", "Clear", "Beige", "Pink", "Orange", "Black", "White", "Unknown"]);
 const nonFlavorTagPatterns = [
-  /^(current|present|past|international|limited edition|franchise exclusive|test|regional|exclusive|holiday)$/i
+  /^(current|present|past|international|limited edition|franchise exclusive|test|regional|exclusive|holiday|restaurant exclusive)$/i
 ];
 
 function titleCase(value) {
@@ -119,7 +119,28 @@ function flavorTagsFrom(infobox, categories) {
 }
 
 function brandFromTitle(title) {
-  const known = ["Coca-Cola", "Pepsi", "Mountain Dew", "Sprite", "Fanta", "7 Up", "7up", "Dr Pepper", "Crush", "Faygo", "Jones", "Jarritos", "Shasta", "Sunkist"];
+  const known = [
+    "A&W",
+    "Barq's",
+    "Big K",
+    "Big Red",
+    "Canada Dry",
+    "Coca-Cola",
+    "Crush",
+    "Diet Coke",
+    "Dr Pepper",
+    "Fanta",
+    "Faygo",
+    "Jarritos",
+    "Jones",
+    "Mountain Dew",
+    "Pepsi",
+    "Shasta",
+    "Sprite",
+    "Sunkist",
+    "7 Up",
+    "7up"
+  ];
   const match = known.find((brand) => title.toLowerCase().startsWith(brand.toLowerCase()));
   return match || "Unknown";
 }
@@ -173,6 +194,10 @@ function toReviewRow(page) {
   };
 }
 
+function isCatalogPage(page) {
+  return !/(^list of\b|\bbrands?$|\(brand\))/i.test(page.title);
+}
+
 async function fetchCategoryMembers() {
   const pages = [];
   let cmcontinue;
@@ -188,7 +213,7 @@ async function fetchCategoryMembers() {
 
     const response = await fetch(url);
     const payload = await response.json();
-    pages.push(...payload.query.categorymembers.filter((page) => page.ns === 0));
+    pages.push(...payload.query.categorymembers.filter((page) => page.ns === 0).filter(isCatalogPage));
     cmcontinue = payload.continue?.cmcontinue;
     if (!cmcontinue) break;
   }
