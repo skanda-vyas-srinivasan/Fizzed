@@ -29,7 +29,7 @@ export function Nav({ user, profile }: { user: User | null; profile: Profile | n
           <div className="hidden lg:block" />
           <nav className="flex min-w-0 items-center justify-center gap-2 overflow-x-auto text-[13px] font-extrabold text-[#CBBCC2] sm:gap-8">
             <Link className="whitespace-nowrap px-1 py-4 hover:text-white" href="/">
-              Feed
+              Home
             </Link>
             <Link className="whitespace-nowrap px-1 py-4 hover:text-white" href="/top">
               Top Sodas

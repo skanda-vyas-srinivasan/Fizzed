@@ -103,14 +103,18 @@ function RankList({ title, sodas, href }: { title: string; sodas: Soda[]; href?:
     <div>
       <SectionHeader title={title} href={href} />
       <div className="mt-4 space-y-3">
-        {sodas.map((soda) => (
-          <Link key={soda.id} href={`/soda/${soda.id}`} className="flex gap-3 border-b border-white/10 pb-3">
-            <div className="w-10 shrink-0">
+        {sodas.map((soda, index) => (
+          <Link key={soda.id} href={`/soda/${soda.id}`} className="grid grid-cols-[2.25rem_5.25rem_1fr] items-center gap-4 border-b border-white/10 pb-4">
+            <div className="text-3xl font-extrabold leading-none text-[#E8C879]">{index + 1}</div>
+            <div className="w-[5.25rem] shrink-0">
               <SodaArtwork soda={soda} />
             </div>
             <div className="min-w-0 flex-1">
-              <div className="line-clamp-1 text-xs font-extrabold text-white">{soda.name}</div>
-              <div className="mt-1 text-[11px] font-extrabold text-[#E8C879]">{Number(soda.avg_rating || 0).toFixed(1)}</div>
+              <div className="line-clamp-2 text-lg font-extrabold leading-6 text-white">{soda.name}</div>
+              <div className="mt-2 flex items-center gap-2">
+                <div className="text-2xl font-extrabold leading-none text-[#E8C879]">{Number(soda.avg_rating || 0).toFixed(1)}</div>
+                <Stars value={soda.avg_rating} size="text-sm" />
+              </div>
             </div>
           </Link>
         ))}
