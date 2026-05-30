@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { SodaCard } from "@/components/SodaCard";
 import { getBrowseFacets, getSodas } from "@/lib/data";
+import { groupSodas } from "@/lib/normalize";
 import { ensureSodasSeeded } from "@/lib/seed";
 
 export default async function Browse({ searchParams }: { searchParams: { q?: string; brand?: string; country?: string; category?: string } }) {
   await ensureSodasSeeded();
   const [sodas, facets] = await Promise.all([getSodas(searchParams), getBrowseFacets()]);
+  const groupedSodas = groupSodas(sodas);
 
   return (
     <div className="space-y-6">
@@ -32,14 +34,16 @@ export default async function Browse({ searchParams }: { searchParams: { q?: str
       </div>
 
       <div className="flex items-center justify-between">
-        <p className="text-sm font-semibold text-neutral-500">{sodas.length} results</p>
+        <p className="text-sm font-semibold text-neutral-500">
+          {groupedSodas.length} results · {sodas.length} raw entries
+        </p>
         <Link href="/browse" className="text-sm font-bold text-fizz">
           Clear filters
         </Link>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {sodas.map((soda) => (
+        {groupedSodas.map((soda) => (
           <SodaCard key={soda.id} soda={soda} />
         ))}
       </div>
