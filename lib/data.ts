@@ -382,7 +382,7 @@ export async function getProfileFollowing(profileId: string, limit?: number) {
   return (data || []) as Profile[];
 }
 
-export async function getProfileRatings(profileId: string) {
+export async function getProfileRatings(profileId: string, limit = 60) {
   if (!hasPublicSupabaseEnv()) return profileId === mockProfile.id ? mockRatings : [];
 
   const supabase = createClient();
@@ -391,7 +391,7 @@ export async function getProfileRatings(profileId: string) {
     .select("*, sodas(*)")
     .eq("user_id", profileId)
     .order("created_at", { ascending: false })
-    .limit(60);
+    .limit(limit);
 
   return (data || []) as Rating[];
 }

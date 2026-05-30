@@ -11,7 +11,6 @@ export default async function DiscussionPage({ searchParams }: { searchParams: {
       <header className="border-b border-white/10 pb-4">
         <div>
           <h1 className="text-3xl font-extrabold text-white">Discussion</h1>
-          <p className="mt-1 text-sm font-semibold text-[#AFA1A8]">Recommendations, rankings, finds, and site talk.</p>
         </div>
       </header>
 
@@ -37,7 +36,6 @@ export default async function DiscussionPage({ searchParams }: { searchParams: {
             <summary className="flex cursor-pointer list-none items-center justify-between gap-4 bg-[#2B2228] px-4 py-3 marker:hidden">
               <div>
                 <h2 className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">Start a topic</h2>
-                <p className="mt-1 text-xs font-semibold text-[#8F8288]">Open a thread on the board.</p>
               </div>
               <span className="shrink-0 rounded bg-[#E58A84] px-4 py-2 text-xs font-extrabold uppercase tracking-[0.12em] text-[#2A1110] group-open:hidden">New thread</span>
               <span className="hidden shrink-0 rounded bg-[#4A3B43] px-4 py-2 text-xs font-extrabold uppercase tracking-[0.12em] text-[#F8F1F3] group-open:inline-block">Close</span>

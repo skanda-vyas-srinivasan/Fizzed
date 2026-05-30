@@ -22,64 +22,34 @@ export default async function SodaPage({ params }: { params: { id: string } }) {
   ]);
   if (!soda) notFound();
 
-  const tags = soda.flavor_tags.filter((tag) => tag && tag !== "Unknown");
-  const subtitle = soda.brand === "Unknown" ? tags[0] || soda.category : soda.brand;
   const score = Number(soda.avg_rating || 0);
 
   return (
     <div className="mx-auto max-w-6xl">
       <header>
-        <p className="text-sm font-semibold text-[#CBBCC2]">{subtitle}</p>
-        <h1 className="mt-1 text-3xl font-extrabold leading-tight text-white sm:text-4xl">{soda.name}</h1>
+        <h1 className="text-3xl font-extrabold leading-tight text-white sm:text-4xl">{soda.name}</h1>
       </header>
 
-      <section className="mt-5 grid gap-7 lg:grid-cols-[1fr_280px]">
-        <div>
-          <div className="grid gap-5 md:grid-cols-[240px_1fr]">
-            <SodaArtwork soda={soda} large />
-            <div className="space-y-4">
-              <div className="overflow-hidden rounded border border-white/10 bg-[#2B2228]">
-                <ScorePanel score={score} note={`${soda.total_ratings.toLocaleString()} ratings`} />
-              </div>
+      <section className="mt-5">
+        <div className="grid gap-5 lg:grid-cols-[240px_1fr]">
+          <SodaArtwork soda={soda} large />
+          <div className="space-y-4">
+            <div className="overflow-hidden rounded border border-white/10 bg-[#2B2228]">
+              <ScorePanel score={score} note={`${soda.total_ratings.toLocaleString()} ratings`} />
+            </div>
 
-              <div id="details" className="rounded border border-white/10 bg-[#211A1F] p-4">
-                <div className="mb-3 flex items-center justify-between border-b border-white/10 pb-2">
-                  <h2 className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">Details</h2>
-                  <span className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#8F8288]">The Soda Wiki</span>
-                </div>
-                <Detail label="Brand" value={soda.brand} />
-                <Detail label="Category" value={soda.category} />
-                <Detail label="Origin" value={soda.country} />
-                {tags.length ? (
-                  <div className="mt-3 flex flex-wrap gap-1.5">
-                    {tags.map((tag) => (
-                      <Link
-                        key={tag}
-                        href={`/browse?q=${encodeURIComponent(tag)}`}
-                        className="rounded bg-[#362B32] px-2 py-1 text-[10px] font-extrabold uppercase tracking-[0.08em] text-[#CBBCC2] hover:bg-[#4A3B43] hover:text-white"
-                      >
-                        {tag}
-                      </Link>
-                    ))}
-                  </div>
-                ) : null}
+            <div id="ratings" className="rounded border border-white/10 bg-[#2B2228] p-4">
+              <h2 className="border-b border-white/10 pb-2 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">Rating breakdown</h2>
+              <div className="mt-4">
+                <RatingBreakdown rows={breakdown} />
               </div>
             </div>
-          </div>
-
-          <div className="mt-7 border-t border-white/10 pt-5">
-            <RateDrinkPanel sodaId={soda.id} isSignedIn={Boolean(user)} existingRating={currentRating} />
           </div>
         </div>
 
-        <aside className="space-y-5">
-          <div id="ratings" className="rounded border border-white/10 bg-[#2B2228] p-4">
-            <h2 className="border-b border-white/10 pb-2 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">Rating breakdown</h2>
-            <div className="mt-4">
-              <RatingBreakdown rows={breakdown} />
-            </div>
-          </div>
-        </aside>
+        <div className="mt-7 border-t border-white/10 pt-5">
+          <RateDrinkPanel sodaId={soda.id} isSignedIn={Boolean(user)} existingRating={currentRating} />
+        </div>
       </section>
 
       <section id="reviews" className="mt-10">
@@ -106,17 +76,6 @@ function ScorePanel({ score, note }: { score: number; note: string }) {
           <span className="text-sm font-semibold text-[#CBBCC2]">{note}</span>
         </div>
       </div>
-    </div>
-  );
-}
-
-function Detail({ label, value }: { label: string; value: string }) {
-  if (!value || value === "Unknown") return null;
-
-  return (
-    <div className="grid grid-cols-[88px_1fr] gap-3 border-b border-white/10 py-2 text-xs">
-      <span className="font-extrabold uppercase tracking-[0.08em] text-[#8F8288]">{label}</span>
-      <span className="font-semibold text-[#F8F1F3]">{value}</span>
     </div>
   );
 }
@@ -162,7 +121,7 @@ function ReviewRow({ rating }: { rating: Rating }) {
         <p className="mt-2 text-sm leading-6 text-[#F8F1F3]">{rating.review_text}</p>
       </div>
       <div className="hidden pt-1 sm:block">
-        <Stars value={rating.score} size="text-sm" />
+        {rating.score === null ? null : <Stars value={rating.score} size="text-sm" />}
       </div>
     </article>
   );

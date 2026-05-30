@@ -16,6 +16,7 @@ function readableError(error: { message?: string; code?: string } | null | undef
   if (message.includes("profiles_username_key") || lower.includes("duplicate key") || code === "23505") return "That username is already taken.";
   if (lower.includes("row-level security") || lower.includes("rls") || code === "42501") return "You do not have permission to do that.";
   if (lower.includes("violates foreign key") || code === "23503") return "That item no longer exists. Refresh and try again.";
+  if (lower.includes("not-null constraint") && lower.includes("score")) return "NR is not enabled in Supabase yet. Run supabase/ratings_nr_score.sql, then try again.";
   if (lower.includes("check constraint") || code === "23514") return "One of those values is not allowed.";
   if (lower.includes("schema cache") || lower.includes("could not find the table")) return "This feature is not installed in Supabase yet. Run the matching SQL setup file, then try again.";
   if (lower.includes("invalid login credentials")) return "Email or password is incorrect.";
@@ -122,6 +123,7 @@ export async function updateProfile(formData: FormData) {
   const username = String(formData.get("username") || "").trim();
   const bio = String(formData.get("bio") || "").trim();
   const location = String(formData.get("location") || "").trim();
+  const redirectTo = String(formData.get("redirect_to") || "");
 
   const { data: existingProfile } = await supabase.from("profiles").select("id,bio,location,avatar_url").eq("id", data.user.id).maybeSingle();
   const userAvatar = data.user.user_metadata?.avatar_url || data.user.user_metadata?.picture || null;
@@ -138,6 +140,7 @@ export async function updateProfile(formData: FormData) {
 
   if (error) redirect(`/onboarding?message=${encodedError(error)}`);
   revalidatePath("/");
+  if (redirectTo === "/") redirect("/");
   redirect(`/profile/${username}`);
 }
 

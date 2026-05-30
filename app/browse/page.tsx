@@ -4,10 +4,15 @@ import { getProfiles, getSodas } from "@/lib/data";
 import { ensureSodasSeeded } from "@/lib/seed";
 import type { Profile } from "@/lib/types";
 
-export default async function Browse({ searchParams }: { searchParams: { q?: string; brand?: string; country?: string; category?: string } }) {
+type SearchType = "sodas" | "users";
+
+export default async function Browse({ searchParams }: { searchParams: { q?: string; type?: SearchType; brand?: string; country?: string; category?: string } }) {
   await ensureSodasSeeded();
   const [sodas, profiles] = await Promise.all([getSodas(searchParams), getProfiles(searchParams)]);
   const hasQuery = Boolean(searchParams.q?.trim());
+  const type = searchParams.type === "users" ? "users" : "sodas";
+  const showUsers = hasQuery && type === "users";
+  const showSodas = type === "sodas";
 
   return (
     <div className="space-y-7">
@@ -23,7 +28,9 @@ export default async function Browse({ searchParams }: { searchParams: { q?: str
         </div>
       </div>
 
-      {hasQuery ? (
+      {hasQuery ? <SearchTabs q={searchParams.q || ""} type={type} counts={{ sodas: sodas.length, users: profiles.length }} /> : null}
+
+      {showUsers ? (
         <section>
           <SectionHeader title="Users" />
           {profiles.length ? (
@@ -38,15 +45,47 @@ export default async function Browse({ searchParams }: { searchParams: { q?: str
         </section>
       ) : null}
 
-      <section>
+      {showSodas ? (
+        <section>
         {hasQuery ? <SectionHeader title="Sodas" /> : null}
-      <div className="grid grid-cols-3 gap-x-4 gap-y-8 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7">
-        {sodas.map((soda) => (
-          <SodaCard key={soda.id} soda={soda} />
-        ))}
-      </div>
-      </section>
+        {sodas.length ? (
+          <div className="grid grid-cols-3 gap-x-4 gap-y-8 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7">
+            {sodas.map((soda) => (
+              <SodaCard key={soda.id} soda={soda} />
+            ))}
+          </div>
+        ) : (
+          <EmptyLine text="No sodas found." />
+        )}
+        </section>
+      ) : null}
     </div>
+  );
+}
+
+function SearchTabs({ q, type, counts }: { q: string; type: SearchType; counts: Record<SearchType, number> }) {
+  const tabs: Array<{ label: string; value: SearchType }> = [
+    { label: "Sodas", value: "sodas" },
+    { label: "Users", value: "users" }
+  ];
+
+  return (
+    <nav className="flex flex-wrap gap-2 border-b border-white/10 pb-3" aria-label="Search result type">
+      {tabs.map((tab) => {
+        const active = type === tab.value;
+        return (
+          <Link
+            key={tab.value}
+            href={`/browse?q=${encodeURIComponent(q)}&type=${tab.value}`}
+            className={`rounded px-4 py-2 text-xs font-extrabold uppercase tracking-[0.12em] ${
+              active ? "bg-[#E58A84] text-[#2A1110]" : "bg-[#2B2228] text-[#CBBCC2] hover:bg-[#362B32] hover:text-white"
+            }`}
+          >
+            {tab.label} <span className="ml-1 opacity-70">{counts[tab.value]}</span>
+          </Link>
+        );
+      })}
+    </nav>
   );
 }
 

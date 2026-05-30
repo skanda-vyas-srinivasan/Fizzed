@@ -2,15 +2,14 @@ import Link from "next/link";
 import { SodaCard } from "@/components/SodaCard";
 import { SodaArtwork } from "@/components/SodaArtwork";
 import { Stars } from "@/components/Stars";
-import { getHomeData } from "@/lib/data";
+import { getHomeData, getTopSodas } from "@/lib/data";
 import { ensureSodasSeeded } from "@/lib/seed";
 import type { Rating, Soda } from "@/lib/types";
 
 export default async function Home() {
   await ensureSodasSeeded();
-  const { sodas, ratings } = await getHomeData();
+  const [{ sodas, ratings }, topSodas] = await Promise.all([getHomeData(), getTopSodas(5)]);
   const randomSodas = sodas.slice(0, 12);
-  const topSodas = [...sodas].sort((a, b) => b.total_ratings - a.total_ratings || b.avg_rating - a.avg_rating).slice(0, 5);
 
   return (
     <div className="mx-auto max-w-6xl space-y-10">
@@ -89,8 +88,8 @@ function ReviewTile({ rating }: { rating: Rating }) {
             )}
           </div>
           <div className="mt-2 flex items-center gap-2">
-            <Stars value={rating.score} size="text-xs" />
             <span className="text-xs font-bold text-[#CBBCC2]">{rating.score === null ? "NR" : `${rating.score}.0`}</span>
+            {rating.score === null ? null : <Stars value={rating.score} size="text-xs" />}
           </div>
           <p className="mt-3 line-clamp-4 text-xs leading-5 text-[#CBBCC2]">{rating.review_text}</p>
         </div>
@@ -111,7 +110,6 @@ function RankList({ title, sodas, href }: { title: string; sodas: Soda[]; href?:
             </div>
             <div className="min-w-0 flex-1">
               <div className="line-clamp-1 text-xs font-extrabold text-white">{soda.name}</div>
-              <div className="line-clamp-1 text-[11px] font-semibold text-[#CBBCC2]">{soda.brand}</div>
               <div className="mt-1 text-[11px] font-extrabold text-[#E8C879]">{Number(soda.avg_rating || 0).toFixed(1)}</div>
             </div>
           </Link>

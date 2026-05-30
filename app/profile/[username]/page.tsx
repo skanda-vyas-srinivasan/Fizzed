@@ -70,7 +70,7 @@ export default async function ProfilePage({ params }: { params: { username: stri
           <ShelfSection id="ratings" title="Recently rated" ratings={ratings.slice(0, 10)} empty="No ratings yet." />
 
           <section id="reviews">
-            <SectionHeader title="Recent reviews" />
+            <SectionHeader title="Recent reviews" href={`/profile/${profile.username}/reviews`} />
             <div className="mt-4">
               {reviewed.length ? reviewed.map((rating) => <ReviewRow key={rating.id} rating={rating} />) : <EmptyLine text="No written reviews yet." />}
             </div>
@@ -128,7 +128,7 @@ function ProfileSoda({ rating }: { rating: Rating }) {
         <div className="truncate text-sm font-extrabold text-white group-hover:text-[#D9A6B5]">{soda.name}</div>
         <div className="mt-1 flex items-center gap-2">
           <span className="text-xs font-extrabold text-[#E8C879]">{rating.score === null ? "NR" : `${rating.score}.0`}</span>
-          <Stars value={rating.score} size="text-xs" />
+          {rating.score === null ? null : <Stars value={rating.score} size="text-xs" />}
         </div>
       </div>
     </Link>
@@ -150,7 +150,7 @@ function ReviewRow({ rating }: { rating: Rating }) {
         </Link>
         <div className="mt-1 flex items-center gap-2">
           <span className="text-xs font-extrabold text-[#E8C879]">{rating.score === null ? "NR" : `${rating.score}.0`}</span>
-          <Stars value={rating.score} size="text-xs" />
+          {rating.score === null ? null : <Stars value={rating.score} size="text-xs" />}
         </div>
         <p className="mt-3 text-sm leading-6 text-[#F8F1F3]">{rating.review_text}</p>
       </div>

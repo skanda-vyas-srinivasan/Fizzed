@@ -15,7 +15,7 @@ export default async function LogPage({ searchParams }: { searchParams: { soda?:
       <div className="rounded border border-white/10 bg-[#2B2228] p-6 shadow-[0_18px_70px_rgba(0,0,0,0.28)] sm:p-8">
         <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#E8C879]">Log</p>
         <h1 className="mt-2 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">Add a diary entry</h1>
-        <p className="mt-3 text-[#CBBCC2]">Score it from 1 to 5 and leave a tasting note.</p>
+        <p className="mt-3 text-[#CBBCC2]">Add a rating and review.</p>
 
         {searchParams.message ? <div className="mt-5 rounded border border-[#E8C879]/30 bg-[#E8C879]/10 px-4 py-3 text-sm font-bold text-[#F6DE9F]">{searchParams.message}</div> : null}
 
@@ -24,7 +24,7 @@ export default async function LogPage({ searchParams }: { searchParams: { soda?:
             <select name="soda_id" defaultValue={selected?.id} required className="w-full rounded border border-white/10 bg-[#362B32] px-4 py-3 text-sm font-semibold outline-none focus:border-[#D9A6B5]">
               {sodas.map((soda) => (
                 <option key={soda.id} value={soda.id}>
-                  {soda.name} · {soda.brand === "Unknown" ? soda.category : soda.brand}
+                  {soda.name}
                 </option>
               ))}
             </select>

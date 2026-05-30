@@ -45,7 +45,7 @@ export function StarInput({ name = "score", defaultValue = 4 }: { name?: string;
           </button>
         ))}
       </div>
-      <span className="text-sm font-semibold text-[#CBBCC2]">{value === null ? "NR" : `${value}.0`}</span>
+      {value === null ? null : <span className="text-sm font-semibold text-[#CBBCC2]">{value}.0</span>}
     </div>
   );
 }

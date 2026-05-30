@@ -14,7 +14,7 @@ export function Nav({ user, profile }: { user: User | null; profile: Profile | n
           <form action="/browse" className="hidden h-11 w-full max-w-md items-center rounded-full border border-white/10 bg-[#4A3B43]/70 px-4 sm:flex">
             <input
               name="q"
-              placeholder="search sodas, users, brands"
+              placeholder="search sodas, users"
               className="min-w-0 flex-1 bg-transparent text-sm font-semibold text-[#F8F1F3] outline-none placeholder:text-[#927E86]"
             />
             <button type="submit" className="ml-3 flex h-7 w-7 items-center justify-center rounded-full text-[#CBBCC2] hover:text-white" aria-label="Search">
@@ -41,15 +41,17 @@ export function Nav({ user, profile }: { user: User | null; profile: Profile | n
           <div className="hidden items-stretch justify-end sm:flex">
             {user ? (
               <div className="flex">
-                <Link
-                  href={profile?.username ? `/profile/${profile.username}` : "/onboarding"}
-                  className="flex items-center bg-[#4A3B43] px-4 text-sm font-extrabold text-[#F8F1F3] hover:bg-[#5A4951]"
-                >
-                  <span className="mr-2 flex h-7 w-7 items-center justify-center rounded-full bg-[#F8F1F3] text-sm font-black text-[#4A3B43]">
-                    {(profile?.username || "F").charAt(0).toUpperCase()}
-                  </span>
-                  {profile?.username || "Set username"}
-                </Link>
+                {profile?.username ? (
+                  <Link
+                    href={`/profile/${profile.username}`}
+                    className="flex items-center bg-[#4A3B43] px-4 text-sm font-extrabold text-[#F8F1F3] hover:bg-[#5A4951]"
+                  >
+                    <span className="mr-2 flex h-7 w-7 items-center justify-center rounded-full bg-[#F8F1F3] text-sm font-black text-[#4A3B43]">
+                      {profile.username.charAt(0).toUpperCase()}
+                    </span>
+                    {profile.username}
+                  </Link>
+                ) : null}
                 <form action={signOut}>
                   <button className="h-full bg-[#3A3037] px-4 text-xs font-extrabold uppercase tracking-[0.12em] text-[#CBBCC2] hover:text-white">
                     Sign out
@@ -58,12 +60,6 @@ export function Nav({ user, profile }: { user: User | null; profile: Profile | n
               </div>
             ) : (
               <div className="flex">
-                <span className="flex items-center bg-[#4A3B43] px-4 text-sm font-extrabold text-[#F8F1F3]">
-                  <span className="mr-2 flex h-7 w-7 items-center justify-center rounded-full bg-[#F8F1F3] text-sm font-black text-[#4A3B43]">
-                    F
-                  </span>
-                  Guest
-                </span>
                 <Link
                   href="/auth/sign-in"
                   className="flex items-center bg-[#E58A84] px-4 text-xs font-extrabold uppercase tracking-[0.12em] text-[#2A1110] hover:bg-[#F0A19B]"
@@ -89,12 +85,14 @@ export function Nav({ user, profile }: { user: User | null; profile: Profile | n
       <div className="flex border-t border-white/10 sm:hidden">
         {user ? (
           <>
-            <Link
-              href={profile?.username ? `/profile/${profile.username}` : "/onboarding"}
-              className="flex flex-1 items-center justify-center bg-[#4A3B43] px-3 py-3 text-sm font-extrabold text-[#F8F1F3]"
-            >
-              {profile?.username || "Set username"}
-            </Link>
+            {profile?.username ? (
+              <Link
+                href={`/profile/${profile.username}`}
+                className="flex flex-1 items-center justify-center bg-[#4A3B43] px-3 py-3 text-sm font-extrabold text-[#F8F1F3]"
+              >
+                {profile.username}
+              </Link>
+            ) : null}
             <form action={signOut} className="flex">
               <button className="bg-[#3A3037] px-4 text-xs font-extrabold uppercase tracking-[0.12em] text-[#CBBCC2]">Sign out</button>
             </form>
