@@ -5,11 +5,11 @@ export function SodaArtwork({ soda, large = false }: { soda: Pick<Soda, "name" |
   const imageSrc = soda.image_url ? `/api/image?url=${encodeURIComponent(soda.image_url)}` : null;
 
   return (
-    <div className={`${size} overflow-hidden rounded border border-white/10 bg-[#2A1E23] shadow-[0_10px_28px_rgba(0,0,0,0.36)]`}>
+    <div className={`${size} overflow-hidden rounded border border-white/10 bg-[#362B32] shadow-[0_8px_18px_rgba(24,18,21,0.22)]`}>
       {imageSrc ? (
         <img src={imageSrc} alt={soda.name} loading="lazy" decoding="async" className="h-full w-full object-contain p-3" />
       ) : (
-        <div className="flex h-full w-full items-center justify-center bg-gradient-to-b from-[#26313b] to-[#150F12] text-6xl font-black text-[#B8A7AC]">
+        <div className="flex h-full w-full items-center justify-center bg-[#362B32] text-6xl font-black text-[#CBBCC2]">
           {soda.category?.charAt(0) || "F"}
         </div>
       )}

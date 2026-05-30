@@ -18,26 +18,26 @@ export default async function SodaPage({ params }: { params: { id: string } }) {
       <section className="grid gap-7 border-b border-white/10 pb-8 md:grid-cols-[auto_1fr_320px]">
         <SodaArtwork soda={soda} large />
         <div className="min-w-0">
-          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#F6C453]">{soda.category}</p>
+          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#E8C879]">{soda.category}</p>
           <h1 className="mt-2 text-4xl font-extrabold leading-none tracking-tight text-white sm:text-6xl">{soda.name}</h1>
-          <p className="mt-3 text-lg font-semibold text-[#B8A7AC]">{subtitle}</p>
+          <p className="mt-3 text-lg font-semibold text-[#CBBCC2]">{subtitle}</p>
           <div className="mt-5 flex flex-wrap items-center gap-3">
             <span className="text-5xl font-extrabold text-white">{Number(soda.avg_rating).toFixed(1)}</span>
             <Stars value={soda.avg_rating} size="text-xl" />
-            <span className="text-sm font-bold uppercase tracking-[0.12em] text-[#B8A7AC]">{soda.total_ratings} ratings</span>
+            <span className="text-sm font-bold uppercase tracking-[0.12em] text-[#CBBCC2]">{soda.total_ratings} ratings</span>
           </div>
           <div className="mt-5 flex flex-wrap gap-2">
             {tags.map((tag) => (
-              <span key={tag} className="rounded bg-[#2A1E23] px-2.5 py-1 text-xs font-extrabold uppercase tracking-wide text-[#B8A7AC]">
+              <span key={tag} className="rounded bg-[#362B32] px-2.5 py-1 text-xs font-extrabold uppercase tracking-wide text-[#CBBCC2]">
                 {tag}
               </span>
             ))}
           </div>
-          <Link href={`/log?soda=${soda.id}`} className="mt-7 inline-flex rounded bg-[#D8423A] px-5 py-3 text-sm font-extrabold uppercase tracking-[0.12em] text-[#180807]">
+          <Link href={`/log?soda=${soda.id}`} className="mt-7 inline-flex rounded bg-[#E58A84] px-5 py-3 text-sm font-extrabold uppercase tracking-[0.12em] text-[#2A1110]">
             Log this soda
           </Link>
         </div>
-        <div className="h-fit rounded border border-white/10 bg-[#21171B] p-5">
+        <div className="h-fit rounded border border-white/10 bg-[#2B2228] p-5">
           <h2 className="mb-4 text-base font-extrabold uppercase tracking-[0.12em] text-white">Rating breakdown</h2>
           <RatingBreakdown rows={breakdown} />
         </div>
@@ -45,7 +45,7 @@ export default async function SodaPage({ params }: { params: { id: string } }) {
 
       <section>
         <div className="mb-4 border-b border-white/10 pb-2">
-          <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#B8A7AC]">Reviews</p>
+          <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#CBBCC2]">Reviews</p>
           <h2 className="mt-1 text-xl font-extrabold text-white">What people think</h2>
         </div>
         <div className="grid gap-3">
@@ -58,9 +58,9 @@ export default async function SodaPage({ params }: { params: { id: string } }) {
 
 function EmptyReviews({ sodaId }: { sodaId: string }) {
   return (
-    <div className="rounded border border-white/10 bg-[#21171B] p-6 text-sm font-medium text-[#B8A7AC]">
+    <div className="rounded border border-white/10 bg-[#2B2228] p-6 text-sm font-medium text-[#CBBCC2]">
       No written reviews yet.{" "}
-      <Link href={`/log?soda=${sodaId}`} className="font-bold text-[#FF7A70] hover:text-white">
+      <Link href={`/log?soda=${sodaId}`} className="font-bold text-[#D9A6B5] hover:text-white">
         Write the first one.
       </Link>
     </div>
