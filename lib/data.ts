@@ -3,6 +3,13 @@ import { createClient } from "@/lib/supabase/server";
 import { hasPublicSupabaseEnv } from "@/lib/env";
 import { mockProfile, mockRatings, mockSodas } from "@/lib/mock-data";
 import type { Rating, RatingBreakdown, Soda } from "@/lib/types";
+import wikiSodaNames from "@/lib/wiki-soda-names.json";
+
+const wikiNameSet = new Set<string>((wikiSodaNames as string[]).map((name) => name.toLowerCase()));
+
+function isWikiSoda(soda: Pick<Soda, "name">) {
+  return wikiNameSet.has(soda.name.toLowerCase());
+}
 
 export const getCurrentUser = cache(async () => {
   if (!hasPublicSupabaseEnv()) return null;
@@ -38,7 +45,7 @@ export async function getHomeData() {
   ]);
 
   return {
-    sodas: (sodas.data || []) as Soda[],
+    sodas: ((sodas.data || []) as Soda[]).filter(isWikiSoda),
     ratings: (ratings.data || []) as Rating[],
     userCount: profiles.count || 0
   };
@@ -56,7 +63,7 @@ export async function getSodas(filters: { q?: string; brand?: string; country?: 
   }
 
   const supabase = createClient();
-  let query = supabase.from("sodas").select("*").order("total_ratings", { ascending: false }).limit(60);
+  let query = supabase.from("sodas").select("*").order("name").limit(2000);
 
   if (filters.q) query = query.or(`name.ilike.%${filters.q}%,brand.ilike.%${filters.q}%`);
   if (filters.brand) query = query.eq("brand", filters.brand);
@@ -64,7 +71,7 @@ export async function getSodas(filters: { q?: string; brand?: string; country?: 
   if (filters.category) query = query.eq("category", filters.category);
 
   const { data } = await query;
-  return (data || []) as Soda[];
+  return ((data || []) as Soda[]).filter(isWikiSoda);
 }
 
 export async function getBrowseFacets() {
@@ -77,8 +84,8 @@ export async function getBrowseFacets() {
   }
 
   const supabase = createClient();
-  const { data } = await supabase.from("sodas").select("brand,country,category").limit(1000);
-  const rows = data || [];
+  const { data } = await supabase.from("sodas").select("name,brand,country,category").limit(20000);
+  const rows = ((data || []) as Array<Pick<Soda, "name" | "brand" | "country" | "category">>).filter(isWikiSoda);
 
   return {
     brands: Array.from(new Set(rows.map((row) => row.brand).filter(Boolean))).sort().slice(0, 40),
