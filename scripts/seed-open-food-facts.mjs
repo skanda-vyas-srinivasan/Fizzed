@@ -16,6 +16,20 @@ const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE
   auth: { autoRefreshToken: false, persistSession: false }
 });
 
+const targetArg = process.argv.find((arg) => arg.startsWith("--target="));
+const targetCount = targetArg ? Number(targetArg.split("=")[1]) : Infinity;
+if (!Number.isFinite(targetCount) && targetCount !== Infinity) {
+  throw new Error("Seed target must be a positive number, for example: npm run seed -- --target=10000");
+}
+if (targetCount !== Infinity && targetCount < 1) {
+  throw new Error("Seed target must be a positive number, for example: npm run seed -- --target=10000");
+}
+const startPageArg = process.argv.find((arg) => arg.startsWith("--start-page="));
+const startPage = Number(startPageArg?.split("=")[1] || 1);
+if (!Number.isInteger(startPage) || startPage < 1) {
+  throw new Error("Start page must be a positive integer, for example: npm run seed -- --target=10000 --start-page=50");
+}
+
 const tagMap = ["cola", "lemon", "lime", "orange", "ginger", "cream", "root-beer", "cherry", "grape", "tonic", "energy", "sparkling"];
 
 function cleanTag(tag) {
@@ -85,12 +99,20 @@ async function fetchPage(page) {
 
 let count = await sodaCount();
 console.log(`Starting soda count: ${count}`);
+console.log(`Target soda count: ${targetCount === Infinity ? "all available pages" : targetCount}`);
+console.log(`Starting Open Food Facts page: ${startPage}`);
 
-for (let page = 1; page <= 220 && count < 5000; page += 1) {
+let lastPage = 220;
+
+for (let page = startPage; page <= lastPage && count < targetCount; page += 1) {
   const payload = await fetchPage(page);
   if (!payload?.products?.length) {
     console.log(`Page ${page}: skipped`);
     continue;
+  }
+
+  if (payload.count && payload.page_size) {
+    lastPage = Math.ceil(payload.count / payload.page_size);
   }
 
   const rows = payload.products.map(normalizeProduct).filter(Boolean);
