@@ -8,7 +8,7 @@ export function ReviewCard({ rating, showSoda = true }: { rating: Rating; showSo
   const soda = rating.sodas;
 
   return (
-    <article className="rounded border border-white/10 bg-[#1b2229] p-4">
+    <article className="rounded border border-white/10 bg-[#21171B] p-4">
       <div className="flex gap-4">
         {showSoda && soda ? (
           <div className="w-16 shrink-0">
@@ -19,13 +19,13 @@ export function ReviewCard({ rating, showSoda = true }: { rating: Rating; showSo
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div className="min-w-0">
               {soda ? (
-                <Link href={`/soda/${soda.id}`} className="truncate text-base font-extrabold text-white hover:text-[#40bcf4]">
+                <Link href={`/soda/${soda.id}`} className="truncate text-base font-extrabold text-white hover:text-[#FF7A70]">
                   {soda.name}
                 </Link>
               ) : null}
-              <div className="mt-0.5 text-sm text-[#9aa5b1]">
+              <div className="mt-0.5 text-sm text-[#B8A7AC]">
                 {profile?.username ? (
-                  <Link href={`/profile/${profile.username}`} className="font-bold text-[#d8e0e8] hover:text-[#40bcf4]">
+                  <Link href={`/profile/${profile.username}`} className="font-bold text-[#F4ECEE] hover:text-[#FF7A70]">
                     @{profile.username}
                   </Link>
                 ) : (
@@ -36,7 +36,7 @@ export function ReviewCard({ rating, showSoda = true }: { rating: Rating; showSo
             </div>
             <Stars value={rating.score} />
           </div>
-          {rating.review_text ? <p className="mt-3 text-sm leading-6 text-[#d8e0e8]">{rating.review_text}</p> : null}
+          {rating.review_text ? <p className="mt-3 text-sm leading-6 text-[#F4ECEE]">{rating.review_text}</p> : null}
         </div>
       </div>
     </article>

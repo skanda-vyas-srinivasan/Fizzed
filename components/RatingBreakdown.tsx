@@ -7,11 +7,11 @@ export function RatingBreakdown({ rows }: { rows: Breakdown[] }) {
     <div className="space-y-2">
       {rows.map((row) => (
         <div key={row.score} className="grid grid-cols-[32px_1fr_40px] items-center gap-3">
-          <div className="text-right text-sm font-bold text-[#9aa5b1]">{row.score}★</div>
-          <div className="h-2 overflow-hidden rounded-full bg-[#2c3440]">
-            <div className="h-full rounded-full bg-[#00c030]" style={{ width: `${(row.count / max) * 100}%` }} />
+          <div className="text-right text-sm font-bold text-[#B8A7AC]">{row.score}★</div>
+          <div className="h-2 overflow-hidden rounded-full bg-[#3A2A31]">
+            <div className="h-full rounded-full bg-[#D8423A]" style={{ width: `${(row.count / max) * 100}%` }} />
           </div>
-          <div className="text-sm text-[#9aa5b1]">{row.count}</div>
+          <div className="text-sm text-[#B8A7AC]">{row.count}</div>
         </div>
       ))}
     </div>

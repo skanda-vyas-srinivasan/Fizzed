@@ -14,23 +14,23 @@ export default async function Home() {
       <section className="border-b border-white/10 pb-8">
         <div className="grid gap-8 lg:grid-cols-[1fr_440px] lg:items-end">
           <div>
-            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#ff8000]">Letterboxd for sodas</p>
+            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#F6C453]">Letterboxd for sodas</p>
             <h1 className="mt-3 max-w-4xl text-5xl font-extrabold leading-[0.95] tracking-tight text-white sm:text-7xl">
               Track every can, bottle, and fountain pull.
             </h1>
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-[#9aa5b1]">
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-[#B8A7AC]">
               Rate sodas, keep a diary, and browse a cleaner catalog built from The Soda Wiki.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <Link href="/browse" className="rounded bg-[#00c030] px-5 py-3 text-sm font-extrabold uppercase tracking-[0.12em] text-[#071009]">
+              <Link href="/browse" className="rounded bg-[#D8423A] px-5 py-3 text-sm font-extrabold uppercase tracking-[0.12em] text-[#180807]">
                 Browse
               </Link>
-              <Link href="/log" className="rounded bg-[#2c3440] px-5 py-3 text-sm font-extrabold uppercase tracking-[0.12em] text-[#d8e0e8]">
+              <Link href="/log" className="rounded bg-[#3A2A31] px-5 py-3 text-sm font-extrabold uppercase tracking-[0.12em] text-[#F4ECEE]">
                 Log a soda
               </Link>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-3 rounded border border-white/10 bg-[#1b2229] p-4">
+          <div className="grid grid-cols-3 gap-3 rounded border border-white/10 bg-[#21171B] p-4">
             <Stat value={sodaCount.toLocaleString()} label="Sodas" />
             <Stat value={totalRatings.toLocaleString()} label="Ratings" />
             <Stat value={userCount.toLocaleString()} label="Members" />
@@ -53,7 +53,7 @@ export default async function Home() {
           {ratings.length ? (
             ratings.map((rating) => <ReviewCard key={rating.id} rating={rating} />)
           ) : (
-            <div className="rounded border border-white/10 bg-[#1b2229] p-6 text-sm font-medium text-[#9aa5b1]">
+            <div className="rounded border border-white/10 bg-[#21171B] p-6 text-sm font-medium text-[#B8A7AC]">
               No ratings yet. Seed the database, sign in, and make the first log.
             </div>
           )}
@@ -67,11 +67,11 @@ function SectionHeader({ eyebrow, title, href }: { eyebrow: string; title: strin
   return (
     <div className="flex items-end justify-between border-b border-white/10 pb-2">
       <div>
-        <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#9aa5b1]">{eyebrow}</p>
+        <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#B8A7AC]">{eyebrow}</p>
         <h2 className="mt-1 text-xl font-extrabold text-white">{title}</h2>
       </div>
       {href ? (
-        <Link href={href} className="text-xs font-extrabold uppercase tracking-[0.12em] text-[#40bcf4] hover:text-white">
+        <Link href={href} className="text-xs font-extrabold uppercase tracking-[0.12em] text-[#FF7A70] hover:text-white">
           More
         </Link>
       ) : null}
@@ -83,7 +83,7 @@ function Stat({ value, label }: { value: string; label: string }) {
   return (
     <div>
       <div className="text-2xl font-extrabold text-white">{value}</div>
-      <div className="mt-1 text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#9aa5b1]">{label}</div>
+      <div className="mt-1 text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#B8A7AC]">{label}</div>
     </div>
   );
 }

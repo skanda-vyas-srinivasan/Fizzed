@@ -12,16 +12,16 @@ export default async function LogPage({ searchParams }: { searchParams: { soda?:
 
   return (
     <div className="mx-auto max-w-2xl">
-      <div className="rounded border border-white/10 bg-[#1b2229] p-6 shadow-[0_18px_70px_rgba(0,0,0,0.28)] sm:p-8">
-        <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#ff8000]">Log</p>
+      <div className="rounded border border-white/10 bg-[#21171B] p-6 shadow-[0_18px_70px_rgba(0,0,0,0.28)] sm:p-8">
+        <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#F6C453]">Log</p>
         <h1 className="mt-2 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">Add a diary entry</h1>
-        <p className="mt-3 text-[#9aa5b1]">Score it from 1 to 5 and leave a tasting note.</p>
+        <p className="mt-3 text-[#B8A7AC]">Score it from 1 to 5 and leave a tasting note.</p>
 
-        {searchParams.message ? <div className="mt-5 rounded border border-[#ff8000]/30 bg-[#ff8000]/10 px-4 py-3 text-sm font-bold text-[#ffb15c]">{searchParams.message}</div> : null}
+        {searchParams.message ? <div className="mt-5 rounded border border-[#F6C453]/30 bg-[#F6C453]/10 px-4 py-3 text-sm font-bold text-[#FFE1A3]">{searchParams.message}</div> : null}
 
         <form action={createRating} className="mt-8 space-y-5">
           <Field label="Soda">
-            <select name="soda_id" defaultValue={selected?.id} required className="w-full rounded border border-white/10 bg-[#202932] px-4 py-3 text-sm font-semibold outline-none focus:border-[#40bcf4]">
+            <select name="soda_id" defaultValue={selected?.id} required className="w-full rounded border border-white/10 bg-[#2A1E23] px-4 py-3 text-sm font-semibold outline-none focus:border-[#FF7A70]">
               {sodas.map((soda) => (
                 <option key={soda.id} value={soda.id}>
                   {soda.name} · {soda.brand === "Unknown" ? soda.category : soda.brand}
@@ -39,11 +39,11 @@ export default async function LogPage({ searchParams }: { searchParams: { soda?:
               name="review_text"
               rows={6}
               placeholder="Crisp, too sweet, perfect with pizza..."
-              className="w-full resize-none rounded border border-white/10 bg-[#202932] px-4 py-3 text-sm outline-none placeholder:text-[#667483] focus:border-[#40bcf4]"
+              className="w-full resize-none rounded border border-white/10 bg-[#2A1E23] px-4 py-3 text-sm outline-none placeholder:text-[#7F6970] focus:border-[#FF7A70]"
             />
           </Field>
 
-          <button className="w-full rounded bg-[#00c030] px-5 py-3 text-sm font-extrabold uppercase tracking-[0.12em] text-[#071009]">Save rating</button>
+          <button className="w-full rounded bg-[#D8423A] px-5 py-3 text-sm font-extrabold uppercase tracking-[0.12em] text-[#180807]">Save rating</button>
         </form>
       </div>
     </div>
@@ -53,7 +53,7 @@ export default async function LogPage({ searchParams }: { searchParams: { soda?:
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="mb-2 block text-xs font-extrabold uppercase tracking-[0.14em] text-[#9aa5b1]">{label}</label>
+      <label className="mb-2 block text-xs font-extrabold uppercase tracking-[0.14em] text-[#B8A7AC]">{label}</label>
       {children}
     </div>
   );
