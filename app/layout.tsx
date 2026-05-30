@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Nav } from "@/components/Nav";
 import { getCurrentProfile, getCurrentUser } from "@/lib/data";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "Fizzed",
@@ -16,6 +17,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body>
         <Nav user={user} profile={profile} />
         <main className="mx-auto w-full max-w-7xl px-4 pb-16 pt-8 sm:px-6 lg:px-8">{children}</main>
+        <Analytics />
       </body>
     </html>
   );
