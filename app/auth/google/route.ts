@@ -1,16 +1,37 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
 
-function siteUrl(request: Request) {
-  return process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin;
-}
+type CookieToSet = { name: string; value: string; options: CookieOptions };
 
 export async function GET(request: Request) {
-  const supabase = createClient();
+  const requestUrl = new URL(request.url);
+  const cookiesToSet: CookieToSet[] = [];
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.headers
+            .get("cookie")
+            ?.split(";")
+            .map((cookie) => {
+              const [name, ...value] = cookie.trim().split("=");
+              return { name, value: value.join("=") };
+            })
+            .filter((cookie) => cookie.name) || [];
+        },
+        setAll(nextCookies: CookieToSet[]) {
+          cookiesToSet.push(...nextCookies);
+        }
+      }
+    }
+  );
+
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${siteUrl(request)}/api/auth/callback`
+      redirectTo: `${requestUrl.origin}/api/auth/callback`
     }
   });
 
@@ -19,5 +40,7 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL(`/auth/sign-in?message=${message}`, request.url));
   }
 
-  return NextResponse.redirect(data.url);
+  const response = NextResponse.redirect(data.url);
+  cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
+  return response;
 }
