@@ -66,27 +66,64 @@ function shuffle<T>(items: T[]) {
   return [...items].sort(() => Math.random() - 0.5);
 }
 
+function normalizeSearchText(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/coca[\s-]?cola/g, "coca cola")
+    .replace(/\bcoke\b/g, "coca cola")
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function searchScore(soda: Soda, rawQuery: string) {
+  const query = normalizeSearchText(rawQuery);
+  if (!query) return 1;
+
+  const text = normalizeSearchText(`${soda.name} ${soda.brand}`);
+  const tokens = query.split(" ").filter(Boolean);
+  const allTokensMatch = tokens.every((token) => text.includes(token));
+  if (!allTokensMatch) return 0;
+
+  if (text === query) return 1000;
+  if (text.startsWith(query)) return 900;
+  if (normalizeSearchText(soda.name) === query) return 850;
+  if (normalizeSearchText(soda.name).startsWith(query)) return 800;
+  if (text.includes(query)) return 700;
+  return 500 - Math.min(tokens.length, 20);
+}
+
 export async function getSodas(filters: { q?: string; brand?: string; country?: string; category?: string }) {
   if (!hasPublicSupabaseEnv()) {
-    return mockSodas.filter((soda) => {
-      const matchesQuery = filters.q ? `${soda.name} ${soda.brand}`.toLowerCase().includes(filters.q.toLowerCase()) : true;
+    return mockSodas
+      .map((soda) => ({ soda, score: filters.q ? searchScore(soda, filters.q) : 1 }))
+      .filter(({ soda, score }) => {
+      const matchesQuery = filters.q ? score > 0 : true;
       const matchesBrand = filters.brand ? soda.brand === filters.brand : true;
       const matchesCountry = filters.country ? soda.country === filters.country : true;
       const matchesCategory = filters.category ? soda.category === filters.category : true;
       return matchesQuery && matchesBrand && matchesCountry && matchesCategory;
-    });
+    })
+      .sort((a, b) => b.score - a.score || a.soda.name.localeCompare(b.soda.name))
+      .map(({ soda }) => soda);
   }
 
   const supabase = createClient();
   let query = supabase.from("sodas").select("*").eq("country", wikiCatalogCountry).order("name").limit(2000);
 
-  if (filters.q) query = query.or(`name.ilike.%${filters.q}%,brand.ilike.%${filters.q}%`);
   if (filters.brand) query = query.eq("brand", filters.brand);
   if (filters.country) query = query.eq("country", filters.country);
   if (filters.category) query = query.eq("category", filters.category);
 
   const { data } = await query;
-  return ((data || []) as Soda[]).filter(isWikiSoda);
+  const rows = ((data || []) as Soda[]).filter(isWikiSoda);
+  if (!filters.q?.trim()) return rows;
+
+  return rows
+    .map((soda) => ({ soda, score: searchScore(soda, filters.q || "") }))
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score || a.soda.name.localeCompare(b.soda.name))
+    .map(({ soda }) => soda);
 }
 
 export async function getProfiles(filters: { q?: string }, limit = 24) {
