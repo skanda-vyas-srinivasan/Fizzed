@@ -1,5 +1,3 @@
-import { signInWithGoogle } from "@/app/actions";
-
 export default function SignInPage({ searchParams }: { searchParams: { message?: string } }) {
   return (
     <section className="mx-auto max-w-6xl py-6 sm:py-14">
@@ -8,12 +6,10 @@ export default function SignInPage({ searchParams }: { searchParams: { message?:
 
       <div className="mt-12 grid gap-12 lg:grid-cols-[360px_1fr] lg:gap-28">
         <div className="space-y-5">
-          <form action={signInWithGoogle}>
-            <button className="flex h-16 w-full items-center rounded-full border border-[#6B6268] bg-transparent px-7 text-left text-lg font-bold text-[#D9D3D6] transition hover:border-[#E58A84] hover:text-white">
-              <span className="mr-8 text-3xl font-black text-[#E65B45]">G</span>
-              Continue with Google
-            </button>
-          </form>
+          <a href="/auth/google" className="flex h-16 w-full items-center rounded-full border border-[#6B6268] bg-transparent px-7 text-left text-lg font-bold text-[#D9D3D6] transition hover:border-[#E58A84] hover:text-white">
+            <span className="mr-8 text-3xl font-black text-[#E65B45]">G</span>
+            Continue with Google
+          </a>
 
           <p className="px-2 text-sm font-semibold leading-6 text-[#8F858A]">
             Email sign-in is disabled while Fizzed is in early setup. Google is the only login method for now.
