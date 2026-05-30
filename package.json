@@ -8,6 +8,7 @@
     "start": "next start",
     "seed": "node scripts/seed-fandom-sodas.mjs",
     "seed:fandom": "node scripts/seed-fandom-sodas.mjs",
+    "seed:mountain-dew": "node scripts/seed-mountain-dew-current.mjs",
     "lint": "next lint"
   },
   "dependencies": {
