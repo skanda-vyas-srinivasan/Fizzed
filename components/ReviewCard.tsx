@@ -8,20 +8,24 @@ export function ReviewCard({ rating, showSoda = true }: { rating: Rating; showSo
   const soda = rating.sodas;
 
   return (
-    <article className="rounded-[1.6rem] bg-white p-4 shadow-sm ring-1 ring-black/5">
+    <article className="rounded border border-white/10 bg-[#1b2229] p-4">
       <div className="flex gap-4">
-        {showSoda && soda ? <SodaArtwork soda={soda} /> : null}
+        {showSoda && soda ? (
+          <div className="w-16 shrink-0">
+            <SodaArtwork soda={soda} />
+          </div>
+        ) : null}
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-wrap items-start justify-between gap-2">
             <div className="min-w-0">
               {soda ? (
-                <Link href={`/soda/${soda.id}`} className="truncate text-base font-bold text-ink hover:text-fizz">
+                <Link href={`/soda/${soda.id}`} className="truncate text-base font-extrabold text-white hover:text-[#40bcf4]">
                   {soda.name}
                 </Link>
               ) : null}
-              <div className="text-sm text-neutral-500">
+              <div className="mt-0.5 text-sm text-[#9aa5b1]">
                 {profile?.username ? (
-                  <Link href={`/profile/${profile.username}`} className="font-semibold text-neutral-700 hover:text-fizz">
+                  <Link href={`/profile/${profile.username}`} className="font-bold text-[#d8e0e8] hover:text-[#40bcf4]">
                     @{profile.username}
                   </Link>
                 ) : (
@@ -32,7 +36,7 @@ export function ReviewCard({ rating, showSoda = true }: { rating: Rating; showSo
             </div>
             <Stars value={rating.score} />
           </div>
-          {rating.review_text ? <p className="mt-3 text-sm leading-6 text-neutral-700">{rating.review_text}</p> : null}
+          {rating.review_text ? <p className="mt-3 text-sm leading-6 text-[#d8e0e8]">{rating.review_text}</p> : null}
         </div>
       </div>
     </article>

@@ -6,60 +6,41 @@ import { ensureSodasSeeded } from "@/lib/seed";
 
 export default async function Home() {
   await ensureSodasSeeded();
-  const { sodas, ratings, userCount } = await getHomeData();
+  const { sodas, ratings, userCount, sodaCount } = await getHomeData();
   const totalRatings = sodas.reduce((sum, soda) => sum + soda.total_ratings, 0);
 
   return (
-    <div className="space-y-8">
-      <section className="relative grid min-h-[430px] overflow-hidden rounded-[2.25rem] bg-ink p-6 text-white shadow-soft ring-1 ring-black/10 lg:grid-cols-[1.25fr_0.75fr] lg:p-10">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_18%,rgba(216,66,58,0.45),transparent_26rem),linear-gradient(135deg,rgba(255,255,255,0.10),transparent_40%)]" />
-        <div>
-          <p className="mb-3 text-sm font-bold uppercase tracking-[0.18em] text-red-200">Letterboxd for sodas</p>
-          <h1 className="max-w-3xl font-display text-5xl font-black leading-[0.98] tracking-normal sm:text-7xl">
-            Rate every soda worth remembering.
-          </h1>
-          <p className="mt-5 max-w-xl text-lg leading-8 text-white/70">
-            Track bottles, cans, fountain finds, regional classics, and imported curiosities in one quiet, fast place.
-          </p>
-          <div className="mt-7 flex flex-wrap gap-3">
-            <Link href="/log" className="rounded-full bg-fizz px-5 py-3 text-sm font-bold text-white shadow-sm shadow-red-500/25">
-              Log a soda
-            </Link>
-            <Link href="/browse" className="rounded-full bg-white px-5 py-3 text-sm font-bold text-neutral-900">
-              Browse database
-            </Link>
+    <div className="space-y-10">
+      <section className="border-b border-white/10 pb-8">
+        <div className="grid gap-8 lg:grid-cols-[1fr_440px] lg:items-end">
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#ff8000]">Letterboxd for sodas</p>
+            <h1 className="mt-3 max-w-4xl text-5xl font-extrabold leading-[0.95] tracking-tight text-white sm:text-7xl">
+              Track every can, bottle, and fountain pull.
+            </h1>
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-[#9aa5b1]">
+              Rate sodas, keep a diary, and browse a cleaner catalog built from The Soda Wiki.
+            </p>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link href="/browse" className="rounded bg-[#00c030] px-5 py-3 text-sm font-extrabold uppercase tracking-[0.12em] text-[#071009]">
+                Browse
+              </Link>
+              <Link href="/log" className="rounded bg-[#2c3440] px-5 py-3 text-sm font-extrabold uppercase tracking-[0.12em] text-[#d8e0e8]">
+                Log a soda
+              </Link>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-3 rounded border border-white/10 bg-[#1b2229] p-4">
+            <Stat value={sodaCount.toLocaleString()} label="Sodas" />
+            <Stat value={totalRatings.toLocaleString()} label="Ratings" />
+            <Stat value={userCount.toLocaleString()} label="Members" />
           </div>
         </div>
-        <div className="relative grid content-end gap-3">
-          {["Cola", "Citrus", "Cherry", "Cream", "Ginger", "Root Beer", "Sparkling", "Imported"].map((tag) => (
-            <Link
-              key={tag}
-              href={`/browse?category=${encodeURIComponent(tag)}`}
-              className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-bold text-white/80 backdrop-blur transition hover:border-white/30 hover:bg-white/15 hover:text-white"
-            >
-              {tag}
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="grid gap-3 sm:grid-cols-3">
-        <Stat value={sodas.length ? "5k+" : "Ready"} label="Real sodas after seed" />
-        <Stat value={totalRatings.toLocaleString()} label="Ratings loaded" />
-        <Stat value={userCount.toLocaleString()} label="Fizzed profiles" />
       </section>
 
       <section>
-        <div className="mb-4 flex items-end justify-between">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-[0.18em] text-neutral-400">Popular</p>
-            <h2 className="font-display text-3xl font-black">Sodas people are reaching for</h2>
-          </div>
-          <Link href="/browse" className="text-sm font-bold text-fizz">
-            View all
-          </Link>
-        </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <SectionHeader eyebrow="Featured" title="Start with these sodas" href="/browse" />
+        <div className="mt-4 grid grid-cols-3 gap-x-4 gap-y-8 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
           {sodas.slice(0, 8).map((soda) => (
             <SodaCard key={soda.id} soda={soda} />
           ))}
@@ -67,15 +48,12 @@ export default async function Home() {
       </section>
 
       <section>
-        <div className="mb-4">
-          <p className="text-sm font-bold uppercase tracking-[0.18em] text-neutral-400">Feed</p>
-          <h2 className="font-display text-3xl font-black">Recent activity</h2>
-        </div>
-        <div className="grid gap-4">
+        <SectionHeader eyebrow="Feed" title="Recent activity" />
+        <div className="mt-4 grid gap-3">
           {ratings.length ? (
             ratings.map((rating) => <ReviewCard key={rating.id} rating={rating} />)
           ) : (
-            <div className="rounded-[1.6rem] bg-white p-8 text-neutral-500 ring-1 ring-black/5">
+            <div className="rounded border border-white/10 bg-[#1b2229] p-6 text-sm font-medium text-[#9aa5b1]">
               No ratings yet. Seed the database, sign in, and make the first log.
             </div>
           )}
@@ -85,11 +63,27 @@ export default async function Home() {
   );
 }
 
+function SectionHeader({ eyebrow, title, href }: { eyebrow: string; title: string; href?: string }) {
+  return (
+    <div className="flex items-end justify-between border-b border-white/10 pb-2">
+      <div>
+        <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#9aa5b1]">{eyebrow}</p>
+        <h2 className="mt-1 text-xl font-extrabold text-white">{title}</h2>
+      </div>
+      {href ? (
+        <Link href={href} className="text-xs font-extrabold uppercase tracking-[0.12em] text-[#40bcf4] hover:text-white">
+          More
+        </Link>
+      ) : null}
+    </div>
+  );
+}
+
 function Stat({ value, label }: { value: string; label: string }) {
   return (
-    <div className="rounded-[1.4rem] bg-white p-5 ring-1 ring-black/5">
-      <div className="font-display text-3xl font-black text-ink">{value}</div>
-      <div className="mt-1 text-sm font-semibold text-neutral-500">{label}</div>
+    <div>
+      <div className="text-2xl font-extrabold text-white">{value}</div>
+      <div className="mt-1 text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#9aa5b1]">{label}</div>
     </div>
   );
 }

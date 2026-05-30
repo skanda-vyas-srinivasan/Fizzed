@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "seed": "node scripts/seed-open-food-facts.mjs",
+    "seed": "node scripts/seed-fandom-sodas.mjs",
     "seed:fandom": "node scripts/seed-fandom-sodas.mjs",
     "lint": "next lint"
   },

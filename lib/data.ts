@@ -30,25 +30,27 @@ export const getCurrentProfile = cache(async () => {
 
 export async function getHomeData() {
   if (!hasPublicSupabaseEnv()) {
-    return { sodas: mockSodas, ratings: mockRatings, userCount: 1 };
+    return { sodas: mockSodas, ratings: mockRatings, userCount: 1, sodaCount: mockSodas.length };
   }
 
   const supabase = createClient();
 
-  const [sodas, ratings, profiles] = await Promise.all([
-    supabase.from("sodas").select("*").eq("country", wikiCatalogCountry).order("total_ratings", { ascending: false }).limit(8),
+  const [sodas, ratings, profiles, sodaCount] = await Promise.all([
+    supabase.from("sodas").select("*").eq("country", wikiCatalogCountry).not("image_url", "is", null).order("name").limit(8),
     supabase
       .from("ratings")
       .select("*, profiles(*), sodas(*)")
       .order("created_at", { ascending: false })
       .limit(12),
-    supabase.from("profiles").select("id", { count: "exact", head: true })
+    supabase.from("profiles").select("id", { count: "exact", head: true }),
+    supabase.from("sodas").select("id", { count: "exact", head: true }).eq("country", wikiCatalogCountry)
   ]);
 
   return {
     sodas: ((sodas.data || []) as Soda[]).filter(isWikiSoda),
     ratings: (ratings.data || []) as Rating[],
-    userCount: profiles.count || 0
+    userCount: profiles.count || 0,
+    sodaCount: sodaCount.count || 0
   };
 }
 

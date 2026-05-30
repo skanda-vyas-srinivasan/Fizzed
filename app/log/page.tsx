@@ -12,50 +12,49 @@ export default async function LogPage({ searchParams }: { searchParams: { soda?:
 
   return (
     <div className="mx-auto max-w-2xl">
-      <div className="rounded-[2rem] bg-white p-6 shadow-soft ring-1 ring-black/5 sm:p-8">
-        <p className="text-sm font-bold uppercase tracking-[0.18em] text-fizz">Log</p>
-        <h1 className="mt-2 font-display text-5xl font-black">Add a soda diary entry</h1>
-        <p className="mt-3 text-neutral-500">Score it from 1 to 5 and leave the tasting note you wish the can had printed on it.</p>
+      <div className="rounded border border-white/10 bg-[#1b2229] p-6 shadow-[0_18px_70px_rgba(0,0,0,0.28)] sm:p-8">
+        <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#ff8000]">Log</p>
+        <h1 className="mt-2 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">Add a diary entry</h1>
+        <p className="mt-3 text-[#9aa5b1]">Score it from 1 to 5 and leave a tasting note.</p>
 
-        {searchParams.message ? (
-          <div className="mt-5 rounded-2xl bg-red-50 px-4 py-3 text-sm font-semibold text-fizz">{searchParams.message}</div>
-        ) : null}
+        {searchParams.message ? <div className="mt-5 rounded border border-[#ff8000]/30 bg-[#ff8000]/10 px-4 py-3 text-sm font-bold text-[#ffb15c]">{searchParams.message}</div> : null}
 
         <form action={createRating} className="mt-8 space-y-5">
-          <div>
-            <label className="mb-2 block text-sm font-bold text-neutral-700">Soda</label>
-            <select
-              name="soda_id"
-              defaultValue={selected?.id}
-              required
-              className="w-full rounded-2xl border border-black/10 bg-cloud px-4 py-3 text-sm font-semibold outline-none focus:border-fizz"
-            >
+          <Field label="Soda">
+            <select name="soda_id" defaultValue={selected?.id} required className="w-full rounded border border-white/10 bg-[#202932] px-4 py-3 text-sm font-semibold outline-none focus:border-[#40bcf4]">
               {sodas.map((soda) => (
                 <option key={soda.id} value={soda.id}>
-                  {soda.name} · {soda.brand}
+                  {soda.name} · {soda.brand === "Unknown" ? soda.category : soda.brand}
                 </option>
               ))}
             </select>
-          </div>
+          </Field>
 
-          <div>
-            <label className="mb-2 block text-sm font-bold text-neutral-700">Rating</label>
+          <Field label="Rating">
             <StarInput />
-          </div>
+          </Field>
 
-          <div>
-            <label className="mb-2 block text-sm font-bold text-neutral-700">Review</label>
+          <Field label="Review">
             <textarea
               name="review_text"
               rows={6}
               placeholder="Crisp, too sweet, perfect with pizza..."
-              className="w-full resize-none rounded-2xl border border-black/10 bg-cloud px-4 py-3 text-sm outline-none focus:border-fizz"
+              className="w-full resize-none rounded border border-white/10 bg-[#202932] px-4 py-3 text-sm outline-none placeholder:text-[#667483] focus:border-[#40bcf4]"
             />
-          </div>
+          </Field>
 
-          <button className="w-full rounded-full bg-fizz px-5 py-3 text-sm font-bold text-white">Save rating</button>
+          <button className="w-full rounded bg-[#00c030] px-5 py-3 text-sm font-extrabold uppercase tracking-[0.12em] text-[#071009]">Save rating</button>
         </form>
       </div>
+    </div>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="mb-2 block text-xs font-extrabold uppercase tracking-[0.14em] text-[#9aa5b1]">{label}</label>
+      {children}
     </div>
   );
 }
