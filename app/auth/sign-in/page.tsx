@@ -23,7 +23,7 @@ export default function SignInPage({ searchParams }: { searchParams: { message?:
         <div className="space-y-9 pt-1">
           <Feature title="Rate & Review Sodas">Score bottles, cans, fountain pulls, and regional finds from 1 to 5.</Feature>
           <Feature title="Build Your Soda Shelf">Keep a personal log of what you have tried and what is worth finding again.</Feature>
-          <Feature title="Browse the Catalog">Search a cleaner Soda Wiki-based catalog by name, brand, and flavor cues.</Feature>
+          <Feature title="Browse the Catalog">Search a cleaner Soda Wiki-based catalog by name and find recognizable cans fast.</Feature>
           <Feature title="Follow Taste">See friends' ratings and build a feed around weird drinks, classics, and new finds.</Feature>
           <Feature title="Find the Next One">Use ratings and reviews to decide what deserves a spot in the cooler.</Feature>
         </div>
