@@ -8,6 +8,12 @@ type OffProduct = {
   image_front_url?: string;
 };
 
+async function getSodaCount(supabase: NonNullable<ReturnType<typeof createAdminClient>>) {
+  const { count, error } = await supabase.from("sodas").select("id", { count: "exact", head: true });
+  if (error) throw new Error(error.message);
+  return count || 0;
+}
+
 const TAG_MAP = [
   "cola",
   "lemon",
@@ -66,25 +72,39 @@ export async function ensureSodasSeeded() {
   const supabase = createAdminClient();
   if (!supabase) return { seeded: false, reason: "missing-service-role" };
 
-  const { count, error: countError } = await supabase
-    .from("sodas")
-    .select("id", { count: "exact", head: true });
+  let currentCount = 0;
+  try {
+    currentCount = await getSodaCount(supabase);
+  } catch (error) {
+    return { seeded: false, reason: error instanceof Error ? error.message : "count-failed" };
+  }
 
-  if (countError) return { seeded: false, reason: countError.message };
-  if ((count || 0) >= 5000) return { seeded: false, reason: "already-seeded" };
+  if (currentCount >= 5000) return { seeded: false, reason: "already-seeded", count: currentCount };
 
   const seen = new Set<string>();
   let imported = 0;
 
-  for (let page = 1; page <= 60 && imported < 5000; page += 1) {
+  for (let page = 1; page <= 220 && currentCount < 5000; page += 1) {
     const url = new URL("https://world.openfoodfacts.org/api/v2/search");
     url.searchParams.set("categories_tags", "sodas");
     url.searchParams.set("page_size", "100");
     url.searchParams.set("page", String(page));
     url.searchParams.set("fields", "product_name,brands,countries_tags,categories_tags,image_front_url");
 
-    const response = await fetch(url, { next: { revalidate: 60 * 60 * 24 } });
-    if (!response.ok) break;
+    let response: Response | null = null;
+    for (let attempt = 1; attempt <= 3; attempt += 1) {
+      response = await fetch(url, {
+        headers: {
+          "User-Agent": "Fizzed/0.1 (local development soda rating app)"
+        },
+        next: { revalidate: 60 * 60 * 24 }
+      });
+
+      if (response.ok && response.headers.get("content-type")?.includes("application/json")) break;
+      await new Promise((resolve) => setTimeout(resolve, attempt * 750));
+    }
+
+    if (!response?.ok || !response.headers.get("content-type")?.includes("application/json")) continue;
 
     const payload = (await response.json()) as { products?: OffProduct[] };
     const rows = (payload.products || [])
@@ -104,9 +124,10 @@ export async function ensureSodasSeeded() {
       ignoreDuplicates: true
     });
 
-    if (error) return { seeded: imported > 0, reason: error.message, imported };
+    if (error) return { seeded: imported > 0, reason: error.message, imported, count: currentCount };
     imported += rows.length;
+    currentCount = await getSodaCount(supabase);
   }
 
-  return { seeded: imported > 0, reason: "completed", imported };
+  return { seeded: imported > 0, reason: "completed", imported, count: currentCount };
 }
