@@ -133,7 +133,9 @@ function countryFrom(infobox, categories) {
 }
 
 function imageUrl(page) {
-  return page.original?.source || null;
+  const fileTitle = fallbackFileTitle(page);
+  const redirectUrl = fileTitle ? `${wikiBase}/Special:Redirect/file/${encodeURIComponent(fileTitle.replace(/^File:/, ""))}` : null;
+  return page.original?.source || page.thumbnail?.source || page.fallbackImageUrl || redirectUrl;
 }
 
 function toRow(page) {
@@ -198,15 +200,57 @@ async function fetchPageDetails(titles) {
   const url = new URL(wikiApi);
   url.searchParams.set("action", "query");
   url.searchParams.set("titles", titles.join("|"));
-  url.searchParams.set("prop", "pageimages|revisions");
-  url.searchParams.set("piprop", "original");
+  url.searchParams.set("prop", "pageimages|revisions|images");
+  url.searchParams.set("piprop", "original|thumbnail");
+  url.searchParams.set("pithumbsize", "500");
   url.searchParams.set("rvprop", "content");
   url.searchParams.set("rvslots", "main");
   url.searchParams.set("format", "json");
 
   const response = await fetch(url);
   const payload = await response.json();
-  return Object.values(payload.query.pages).filter((page) => page.pageid);
+  const pages = Object.values(payload.query.pages).filter((page) => page.pageid);
+  await attachFallbackImages(pages);
+  return pages;
+}
+
+function fallbackFileTitle(page) {
+  const imageTitle = page.images?.find((image) => /\.(png|jpe?g|webp|gif)$/i.test(image.title))?.title;
+  if (imageTitle) return imageTitle;
+
+  const revision = page.revisions?.[0]?.slots?.main?.["*"] || "";
+  const match = revision.match(/File:[^}|\]\n]+\.(?:png|jpe?g|webp|gif)/i);
+  return match?.[0];
+}
+
+async function attachFallbackImages(pages) {
+  const fileTitles = Array.from(new Set(pages.filter((page) => !page.original?.source && !page.thumbnail?.source).map(fallbackFileTitle).filter(Boolean)));
+  if (!fileTitles.length) return;
+
+  for (let index = 0; index < fileTitles.length; index += 50) {
+    const batch = fileTitles.slice(index, index + 50);
+    const url = new URL(wikiApi);
+    url.searchParams.set("action", "query");
+    url.searchParams.set("titles", batch.join("|"));
+    url.searchParams.set("prop", "imageinfo");
+    url.searchParams.set("iiprop", "url");
+    url.searchParams.set("format", "json");
+
+    const response = await fetch(url);
+    const payload = await response.json();
+    const urlsByTitle = new Map(
+      Object.values(payload.query.pages)
+        .filter((page) => page.title && page.imageinfo?.[0]?.url)
+        .map((page) => [page.title, page.imageinfo[0].url])
+    );
+
+    for (const page of pages) {
+      const fileTitle = fallbackFileTitle(page);
+      if (fileTitle && urlsByTitle.has(fileTitle)) {
+        page.fallbackImageUrl = urlsByTitle.get(fileTitle);
+      }
+    }
+  }
 }
 
 const members = await fetchCategoryMembers();
